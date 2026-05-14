@@ -1,0 +1,15 @@
+Hardware:
+Det mest almindelige Rover design til terrain-gående Rovers er baseret NASA Mars Rover designet: https://github.com/nasa-jpl/open-source-rover
+Med drejelige hjul:
+
+Den originale har 6 hjul der er indibidualt drejelige, her er en med faste hjul:
+https://www.youtube.com/watch?v=N7xY_O0PeXE
+
+Den er meget dyr at bygge, men vil være det mest "proven" start punkt.
+
+Alternativet som er langt mere simpelt og billigere at bygge er en 4-wheeler som f.eks. dette Tyrkiske projekt:
+https://mkn.itu.edu.tr/en/students/project-teams/itu-rover-team
+Se eksempel: https://www.youtube.com/watch?v=4K8A91jxjwg
+
+Eller mere som denne:
+https://www.youtube.com/watch?v=XiqmVLrzhZ0
