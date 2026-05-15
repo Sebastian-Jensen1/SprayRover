@@ -50,3 +50,25 @@ https://www.simplefoc.com/example_projects
 STM page:
 https://docs.simplefoc.com/stm32_mcu
 
+
+### Reference projekter, gode til at bede AI reviewe for ideer
+
+Turtle Rover (cool little 4-wheel gadget rover)
+https://github.com/TurtleRover
+
+Mars Rover inspired DIY project - very mature / advanced
+https://github.com/jakkra/Mars-Rover
+
+NASA Rover Open Source control code, based on ROS2 (heavy stuff)
+https://github.com/nasa-jpl/osr-rover-code
+
+SAWPY Rover, lover cost version of the NASA Rover from JPL
+https://github.com/Roger-random/Sawppy_Rover
+
+Watney miniature Robot, including charging solution!
+https://github.com/nikivanov/watney
+
+HyphaROS minicar, pretty neat stuff, STM32, but also localization math
+https://github.com/Hypha-ROS/hypharos_minicar
+
+

@@ -6,6 +6,9 @@ Navigation er MEGA svært. Vi skal bruge Roveren i en have under træer og langs
 
 Hvis vi kan løse Navigations udfordringen billigt, så er det et ekstremt hæderfuldt bidrag til Open Source community som ville gøre os berømte! - eller evt. kan vi bygge/sælge et produkt.
 
+
+## Rover Navigation, "the standard solution"
+
 For at komme igang hurtigt, så tager vi "standard løsningen".
 U-Blox FP9 modulet i en Arduino formfactor.
 https://www.ardusimple.com/product/simplertk3b-budget/
@@ -35,7 +38,10 @@ STM32H7
   └── ESKF running at IMU rate (200-400Hz), aiding at lower rates (dette er INS systemet i software)
 
 
+## Rover Navigation, "the smart UWB solution"
 
+Vi har ikke her et krav om at den kan navigere "alle steder", så vi kunne lave et miniature Ultra Wideband Navigation system. Disse moduler er relativt billige, og det ville være meget innovativt. Vi har 40 cm. fra GPS,en, vi har en lille IMU og et INS ESKF Kalman filter system i software. Kan vi aide den med en UWB ranging, så bliver det meget præcist og robust.
+Så kan Roveren køre hurtigt og overbevisende rundt på matriklen!
 
 
 
