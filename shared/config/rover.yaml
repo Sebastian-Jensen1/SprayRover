@@ -9,7 +9,7 @@ geometry:
   wheelbase: 0.60        # distance between front and rear axle
   track_width: 0.50      # distance between left and right wheel centres
   wheel_radius: 0.127    # 10" hoverboard wheel
-  max_steer_angle: 1.57  # per-wheel steering limit (+/-)
+  max_steer_angle: 1.5708  # per-wheel steering limit, +/- 90 degrees
 
 limits:
   max_speed: 1.0         # m/s

@@ -18,6 +18,9 @@ dev = [
     "ruff>=0.6",
     "pre-commit>=3.7",
 ]
+viz = [
+    "matplotlib>=3.8",
+]
 
 [tool.setuptools.packages.find]
 where = ["companion"]
