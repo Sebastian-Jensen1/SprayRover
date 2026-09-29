@@ -5,15 +5,22 @@ SprayRover is an autonomous weed-spraying rover project that combines hardware, 
 ## Repository structure
 
 - `documentation/` - Project documentation, diagrams, and source references (start with [`documentation/system-architecture.md`](documentation/system-architecture.md))
+- `firmware/` - Microcontroller firmware: `nav-mcu/` (STM32H7) and `esc/` (motor controllers, SimpleFOC)
+- `companion/` - Python package `sprayrover` for the Linux companion computer (vision, planner, radar, simulation, UI)
+- `shared/` - Rover configuration (`config/rover.yaml`) and MCU ↔ companion protocol definitions
 - `hardware/` - Schematics, component lists, and wiring documentation
-- `software/` - Application modules for vision, rover control, and spray systems
-- `tests/` - Unit tests, integration tests, and reusable test data
+- `tests/` - Python unit tests, integration tests, and reusable test data
+- `tools/` - Helper scripts (logging, plotting, calibration)
 
-## Root files
+## Getting started
 
-- `README.md` - Project overview and repository guide
-- `.gitignore` - Python-oriented ignore rules for local and generated files
-- `requirements.txt` - Python dependency list for the software stack
+```bash
+pip install -e ".[dev]"      # install the Python package and dev tools
+pre-commit install           # run formatters/linters automatically on each commit
+python -m pytest             # run the Python tests
+```
+
+Firmware build commands are listed in [`CLAUDE.md`](CLAUDE.md). CI runs all checks on every pull request.
 
 ## Branching workflow
 

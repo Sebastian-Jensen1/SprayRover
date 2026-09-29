@@ -37,3 +37,11 @@ htmlcov/
 # OS files
 .DS_Store
 Thumbs.db
+
+# CMake / firmware builds
+build-*/
+cmake-build-*/
+compile_commands.json
+
+# PlatformIO
+.pio/

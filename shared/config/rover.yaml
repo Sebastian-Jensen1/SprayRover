@@ -1,0 +1,38 @@
+# SprayRover configuration: single source of truth for geometry and sensor placement.
+#
+# Units: metres, radians, seconds. Frames: body frame has its origin at the rover centre,
+# x forward, y left, z up (see documentation/system-architecture.md, section 6).
+#
+# All values below are PLACEHOLDERS until the chassis is designed and measured.
+
+geometry:
+  wheelbase: 0.60        # distance between front and rear axle
+  track_width: 0.50      # distance between left and right wheel centres
+  wheel_radius: 0.127    # 10" hoverboard wheel
+  max_steer_angle: 1.57  # per-wheel steering limit (+/-)
+
+limits:
+  max_speed: 1.0         # m/s
+  max_yaw_rate: 1.0      # rad/s
+
+# Sensor mounting offsets in the body frame: [x, y, z] position, [roll, pitch, yaw] orientation.
+sensors:
+  imu:
+    position: [0.0, 0.0, 0.10]
+    orientation: [0.0, 0.0, 0.0]
+  gnss_antenna:
+    position: [0.0, 0.0, 0.50]
+  camera:
+    position: [0.30, 0.0, 0.40]
+    orientation: [0.0, 0.79, 0.0]
+  radar_front:
+    position: [0.35, 0.0, 0.45]
+    orientation: [0.0, 0.0, 0.0]
+  radar_rear:
+    position: [-0.35, 0.0, 0.45]
+    orientation: [0.0, 0.0, 3.14159]
+  spray_nozzle:
+    position: [0.0, 0.0, 0.05]
+
+safety:
+  command_timeout: 0.2   # stop the rover if no command arrives within this time

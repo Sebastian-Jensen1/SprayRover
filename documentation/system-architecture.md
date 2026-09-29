@@ -145,16 +145,23 @@ controller) when the self-contained navigation module becomes a thing.
 - **Sensor frames:** camera, radars, GNSS antenna and IMU each have a fixed, calibrated offset from the body frame.
   Keep these offsets in one config file.
 
-## 7. Suggested software layout
+## 7. Software layout
 
 ```
-software/
-  control/      STM32 firmware: vehicle controller, safety supervisor, ESC/servo drivers
-  navigation/   ESKF (prototyped in Python first, then C/C++ on STM32)    ← new (proposal)
-  vision/       weed detection: dataset tools, training, inference
-  spray/        spray timing logic and valve/pump driver
-  companion/    planner, map, radar processing, UI                        ← new (proposal)
+firmware/
+  nav-mcu/      STM32H7 firmware (C++17, CMake): ESKF, vehicle controller, safety supervisor, spray driver
+  esc/          B-G431B-ESC1 firmware (PlatformIO + SimpleFOC)
+companion/
+  sprayrover/   Python package: vision, planner, radar, sim (ESKF prototyping), ui
+shared/
+  config/       rover.yaml: geometry and sensor offsets (single source of truth)
+  protocol/     MCU ↔ companion message definitions (planned: nanopb/protobuf)
+tests/          Python tests
+tools/          logging, plotting, calibration scripts
 ```
+
+Decisions made for the foundation: STM32CubeMX HAL + CMake for the navigation MCU (not Zephyr, for now),
+PlatformIO + SimpleFOC for the ESCs, and **no ROS 2 to begin with** (to be reconsidered in phase 3).
 
 ## 8. Phased roadmap (proposal)
 

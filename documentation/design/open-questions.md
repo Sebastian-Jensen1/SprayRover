@@ -28,7 +28,7 @@ When one is decided, write the answer down here and update the related docs.
 | # | Decision | Options |
 |---|---|---|
 | 11 | Companion computer | Raspberry Pi 5 (+ AI accelerator) vs. Jetson Orin Nano |
-| 12 | Software framework | ROS 2 vs. lightweight custom (Python + message bus) |
+| 12 | Software framework | **Decided (for now):** no ROS 2 at the start; plain Python on the companion. Reconsider in phase 3 |
 | 13 | Companion ↔ MCU link | Ethernet/UDP vs. UART |
 | 14 | One MCU or two | One STM32H7 for navigation + vehicle control, or separate boards |
 | 15 | Positioning corrections | Galileo HAS only vs. own RTK base station vs. NTRIP service |
