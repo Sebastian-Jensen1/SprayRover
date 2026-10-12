@@ -1,5 +1,18 @@
 # Obstacle Avoidance
 
+
+OBSTACLE AVOIDANCE topic is parked at first, as we have procured this starter kit:
+One Yahboom ROS2 Robot for Jetson Orin Nano 8GB Super Ros Ackerman Car
+See this website for details: https://www.yahboom.net/study/ROSMASTER-M1
+
+We can rely on the Obstacle Avoidance features of ROS2 at first, and if we cannot make do with the standard ROS2 package, we go back to sensing systems as below.
+
+
+
+
+
+
+
 ## Existing systems
 
 Obstacle Avoidance er også et emne som ikke er løst særlig godt i DIY miljøet.

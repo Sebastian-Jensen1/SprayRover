@@ -1,5 +1,19 @@
 # Hardware
 
+
+## To get started fast, we start with an established Rover Design to get experience fast!
+
+The Chinese company Yahboom, see: https://www.yahboom.net/ creates a relatively low cost hardware platform where the full software stack is Open Source,
+
+One Yahboom ROS2 Robot for Jetson Orin Nano 8GB Super Ros Ackerman Car
+
+See this website for details: https://www.yahboom.net/study/ROSMASTER-M1
+
+
+
+
+LEGACY CONTENT BELOW; Will be picked up for future redesign of hardware.
+
 ## Rover Design
 
 Det mest almindelige Rover design til terrain-gående Rovers er baseret på NASA Mars Rover designet:

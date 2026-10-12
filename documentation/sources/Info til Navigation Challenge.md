@@ -1,5 +1,14 @@
 # Navigation
 
+NAVIGATION topic is parked at first, as we have procured this starter kit:
+One Yahboom ROS2 Robot for Jetson Orin Nano 8GB Super Ros Ackerman Car
+See this website for details: https://www.yahboom.net/study/ROSMASTER-M1
+
+We can rely on the Navigation solution in this kit at first, and if we cannot make do with the terrain mapping features in the ROS2 package, we go back to sensing systems as below.
+
+
+
+
 ## Rover Design
 
 Navigation er MEGA svært. Vi skal bruge Roveren i en have under træer og langs husmure. GPS har det med at "falde ud" og have problemer med multipaths i sådanne omgivelser og vi har brug for centimer nøjagtig position for at kunne køre præcist frem/tilbage langs med mure, græsplæne grænsen, genfinde ukrudt m.m.
