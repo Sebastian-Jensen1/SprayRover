@@ -11,3 +11,4 @@ Read in this order:
 | [concept-and-architecture.md](concept-and-architecture.md) | The recommended technical concept: develop on the M1 (stage 1), then move to an outdoor chassis (stage 2), and why |
 | [project-plan.md](project-plan.md) | Phases 0–6 with demos, exit criteria, rough budget and way of working |
 | [risks-and-open-questions.md](risks-and-open-questions.md) | What can stop the project, what we still need to find out, and what v1 taught us |
+| [business/](business/README.md) | **Business analysis:** navigation module market, and weed robots for municipalities, housing associations and cemeteries |
