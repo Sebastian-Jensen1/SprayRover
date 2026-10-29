@@ -42,14 +42,14 @@ gantt
 | Work through the [first-week checklist](platform-rosmaster-m1.md#5-first-week-checklist): wheel type, kit, **SSD backup**, measurements, gamepad, ROS 2 control | Platform document completed with real values |
 | Indoor demo: slam_toolbox map of a room + Nav2 drive to a goal | Toolchain proven |
 | YOLOv11 segmentation demo on the Orin, frames per second noted | Detection speed known |
-| **M1 lawn test:** drive on dry, short lawn, on gravel and on a terrace. Does it drive straight? Get stuck? Clog? | Decides how much stage 1 can do outdoors |
+| **M1 outdoor test:** drive on the terrace and paved paths in dry weather. Does the lidar work in daylight? Does it drive straight? Measure top speed and how much it can carry | Decides how much of stage 1 can be tested outdoors |
 | Measure the garden: lawn area, paths, beds, trees, walls, slopes. Simple map | `docs/garden-survey.md` |
 | **GNSS survey:** carry an RTK receiver on a pole around the garden for 30 minutes on several days. Log RTK fix / float / none per position | A map of where RTK works. Decides D4 and D7. Needs the GNSS board, which can be reused on the robot |
 | Collect 500+ lawn photos from about the height of the downward camera, in sun, shade and overcast | Start of our own dataset |
 | Ask Miljøstyrelsen about automated spot application of approved ready-to-use products | Written answer in [regulations-and-safety.md](regulations-and-safety.md) |
 | Repo: ROS 2 workspace for SprayRover packages, CI, issue board with phases as milestones | Clean repo skeleton |
 
-**Exit:** M1 drives to a Nav2 goal indoors, YOLO demo runs, lawn test filmed, GNSS map done, 500 photos.
+**Exit:** M1 drives to a Nav2 goal indoors, YOLO demo runs, outdoor test filmed, GNSS map done, 500 photos.
 
 ## Phase 1: Weed detection and spraying on the M1 (≈ 8 weeks)
 
@@ -91,7 +91,7 @@ of them are in the weed map. **This is the stage 1 MVP.**
 | RTK GNSS on USB + robot_localization (EKF + navsat_transform) | Fused pose outdoors, P3 measured where there is fix |
 | Garden map: record boundary and no-go zones. Test lidar SLAM along walls and trees (slam_toolbox / RTAB-Map) | Which localization works where in our garden |
 | Detection outdoors: real lawn weeds in real light, using the dataset from phase 0 | P1 on outdoor images |
-| As far as the M1 can drive: short autonomous runs on terrace, paths and lawn edges | List of what fails outdoors (wheels, sun on lidar, vibration, dust) |
+| Short autonomous runs on the terrace and paved paths, with real weeds in joints and gravel | List of what fails outdoors (sun on lidar and cameras, vibration, dust, uneven tiles) |
 
 **Exit:** GNSS + fusion measured in the garden; a clear list of requirements for the outdoor chassis.
 
@@ -135,7 +135,7 @@ These are the "big ideas" from the original notes. They are valuable, but kept *
 
 | Item | Status | Estimate (DKK) |
 |---|---|---|
-| ROSMASTER M1 with Jetson Orin Nano Super, lidar, camera(s), IMU, battery | **Bought** | – |
+| ROSMASTER M1 Superior kit with Jetson Orin Nano Super (list price US$1,169.90 before shipping and VAT) | **Bought** | – |
 | Downward camera (USB or CSI) + mount | To buy | 300–800 |
 | Spray module (pump, 1–2 valves, MOSFET/relay module, tank, nozzles, tubing) | To buy | 500–1,200 |
 | E-stop, fuses, wiring | To buy | 200–500 |

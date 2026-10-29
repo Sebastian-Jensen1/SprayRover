@@ -100,7 +100,7 @@ unsolved research problem, but it is a lot of integration work.
 
 Yahboom's ROSMASTER series are low-cost educational ROS 2 robots with lidar, depth camera and Jetson or Raspberry Pi
 computers, and with a large set of tutorials (SLAM, Nav2, YOLO). The team has bought a **ROSMASTER M1**.
-It is built for indoor floors, not lawns, but it gives us a complete ROS 2 robot to develop the SprayRover software on.
+It is a small indoor robot (28 × 23 × 18 cm, mecanum wheels), not a lawn robot, but it gives us a complete ROS 2 robot to develop the SprayRover software on.
 See [platform-rosmaster-m1.md](platform-rosmaster-m1.md).
 
 ## 8. Where the gap is

@@ -17,7 +17,8 @@ Review this list at the end of every phase in the [project plan](project-plan.md
 | R8 | **Weather and water damage** to the electronics | Medium | Medium | Splash-proof enclosures, cable glands, don't run in rain at first | 2+ |
 | R9 | **Treatment doesn't kill perennial weeds** (e.g. dandelion grows back from its root) | Medium | Medium | Follow-up visits (F5) measure this. Repeat treatment. Mechanical tool as an alternative | 5 |
 | R10 | **Licence conflict** when reusing (e.g. OpenMower documentation is non-commercial, Yahboom's code licence unclear) | Low | Medium | Check each licence before copying. Link to Yahboom's code instead of copying it. Keep our own code under a clear licence | 0 |
-| R11 | **The M1 can't drive on the lawn** (mecanum rollers slip and clog, low ground clearance) | High | Medium | Expected. Stage 1 develops on indoor/terrace/path surfaces. The outdoor chassis (phase 4) solves it. Lawn test in phase 0 tells how far the M1 gets | 0, 4 |
+| R11 | **The M1 can't drive on the lawn** (28 cm long, ~8 cm mecanum wheels) | Certain | Medium | Planned for. Stage 1 develops on indoor, terrace and path surfaces. The outdoor chassis (phase 4) is needed for the lawn | 4 |
+| R15 | **The M1 can't carry the spray module** (small motors, payload not published) | Medium | Medium | Measure payload in phase 0. Small tank (0.2–0.5 L). Mount the pump at the back over the axle | 0–1 |
 | R12 | **M1 electronics damaged outdoors** (moisture, dust, sun heat on the Jetson) | Medium | High | Outdoor tests only in dry weather and under supervision. Cover over the electronics. SSD backup in phase 0 | 3 |
 | R13 | **Lock-in to Yahboom's software image** (ROS 2 Humble, their workspace and drivers) | Medium | Medium | Back up the image. Keep SprayRover packages in their own workspace. Plan the move to ROS 2 Jazzy (Humble support ends May 2027) | 0, 4 |
 | R14 | **Small battery** (12.6 V, 6000 mAh) limits test time | Medium | Low | Measure runtime in phase 0. Buy a second pack if needed | 0 |
@@ -28,13 +29,13 @@ Review this list at the end of every phase in the [project plan](project-plan.md
 |---|---|---|---|
 | Q1 | How much of the garden has RTK fix? Where are the dead zones? | GNSS survey | End of phase 0 |
 | Q2 | Is an NTRIP correction service available and affordable at the address, or do we need our own base? | Check providers; otherwise build a base | Phase 0 |
-| Q3 | Which outdoor chassis: converted robot mower, hoverboard base or 4-wheel steering? | M1 lawn test (phase 0) and outdoor tests (phase 3) | Phase 4 |
+| Q3 | Which outdoor chassis: converted robot mower, hoverboard base or 4-wheel steering? | Phase 3 outdoor tests and stage 1 results | Phase 4 |
 | Q4 | Which weeds matter most in the target garden? | Photo survey and labelling | Phase 1 |
 | Q5 | May an approved ready-to-use product be applied by an automated spot sprayer in a private garden? | Written question to Miljøstyrelsen | Phase 0 (answer before phase 4) |
 | Q6 | UM980 or ZED-F9P? | Both work over USB with the Jetson; choose on ROS 2 driver support and community | Phase 0 |
 | Q7 | Is the Orin Nano Super fast enough for YOLOv11 segmentation at working speed? | Benchmark in phase 0/1 | Phase 1 |
 | Q8 | Which licence for SprayRover itself (e.g. MIT for code, CERN-OHL for hardware)? | Team decision | Phase 0 |
-| Q9 | Does the M1 have mecanum wheels (as in Yahboom's documentation) or Ackermann steering (as the team note says)? Which kit, lidar and camera? | Look at the robot, check `~/.bashrc` | Phase 0, week 1 |
+| Q9 | ~~Mecanum or Ackermann?~~ **Answered: mecanum** (Yahboom's official parameters). Still to confirm: Superior kit (depth camera) or Standard (pan-tilt camera), which lidar | Check the robot and `~/.bashrc` | Phase 0, week 1 |
 | Q10 | Can the M1's 12 V output power the pump and valve, or do we need a separate supply? | Check the expansion board rating, measure the pump's current | Phase 1 |
 
 ## What v1 taught us

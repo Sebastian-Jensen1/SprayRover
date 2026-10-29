@@ -12,20 +12,20 @@ robot with a Jetson, lidar, depth camera, IMU and working Nav2.
 
 | Part | v2 approach | Why |
 |---|---|---|
-| Robot platform | **ROSMASTER M1** (Jetson Orin Nano Super, ROS 2 Humble, lidar, depth camera, IMU) | Already bought. The software brain can be developed on it right away |
+| Robot platform | **ROSMASTER M1** (Jetson Orin Nano Super, ROS 2 Humble, lidar, depth camera, IMU). A small indoor robot: 28 × 23 × 18 cm, mecanum wheels | Already bought. The software brain can be developed on it right away |
 | Weed detection | **YOLOv11 segmentation on the Orin**, trained on our own lawn images. Yahboom's course 13 covers annotation, training and conversion. OpenWeedLocator's green detection as a simple first step on paths | The Orin is fast enough for a segmentation model in real time. No extra AI accelerator is needed |
 | Spraying | **OWL-style spray module**: 12 V pump + normally-closed solenoid valve(s), switched from a Jetson GPIO through a MOSFET/relay module | A small add-on. OWL shows the design works |
 | Navigation | **Nav2** (already on the M1). For the garden: **robot_localization** fusing IMU + wheel odometry + lidar/visual odometry + RTK GNSS (added later). Coverage planning with opennav_coverage (Fields2Cover) | The standard stack, partly preinstalled. We write configuration and glue |
 | Under trees | **Measure first** (phase 0 GNSS survey). Then use lidar/visual odometry (RTAB-Map is already on the M1) and/or UWB beacons where GNSS is weak | Robot-mower makers solve the same problem this way |
 | Obstacles | The M1's **lidar + depth camera** with Nav2 obstacle avoidance, plus an E-stop and a watchdog. mmWave radar is a separate research track | Works out of the box indoors. Must be tested outdoors |
-| Outdoor chassis (later) | Move the Orin, sensors and software to an outdoor-capable chassis once the software works: converted robot mower, hoverboard base, or v1's 4-wheel steering | The M1 is an indoor robot (mecanum wheels, 12 V motors, no weather protection) |
+| Outdoor chassis (later) | Move the Orin, sensors and software to an outdoor-capable chassis once the software works: converted robot mower, hoverboard base, or v1's 4-wheel steering | The M1 is a small indoor robot (28 cm long, ~8 cm mecanum wheels, 12 V motors, no weather protection) |
 | Weed map + UI | Our own small ROS 2 node + database + web map | Small and unique to SprayRover |
 
 ## 2. Two stages of hardware
 
 | Stage | Hardware | Where it works | What it proves |
 |---|---|---|---|
-| **Stage 1: M1 development robot** | ROSMASTER M1 as bought, plus a downward camera, spray module, E-stop and (later) RTK GNSS | Indoors on printed and real weed samples, terrace, paths, short dry lawn under supervision | Detection, spray timing, weed map, ROS 2 navigation and coverage, safety logic: everything except driving well on a real lawn |
+| **Stage 1: M1 development robot** | ROSMASTER M1 as bought, plus a downward camera, spray module, E-stop and (later) RTK GNSS | Indoors on printed and real weed samples, terrace and paved paths. Not on the lawn: the M1 is only 28 × 23 cm with ~8 cm wheels | Detection, spray timing, weed map, ROS 2 navigation and coverage, safety logic: everything except driving on a real lawn |
 | **Stage 2: outdoor robot** | Same Jetson, sensors and software on an outdoor chassis | The whole garden, including lawn and slopes | Real garden use |
 
 ### Choosing the outdoor chassis (stage 2, decided in phase 4)
@@ -92,7 +92,7 @@ flowchart TB
 | D5 | Treatment | Spot spray, water during development. Swappable head (F9) | Rules or results change |
 | D6 | Detection model | YOLOv11 segmentation, fine-tuned on our own lawn images, exported for the Orin (TensorRT) as in Yahboom's course 13 | Precision/recall targets not met |
 | D7 | Under-tree localization | Decide after the phase 0 GNSS survey: (a) accept short GNSS gaps and dead-reckon, (b) lidar/visual odometry (RTAB-Map), (c) UWB beacons | Survey shows how big the shaded areas are |
-| D8 | Outdoor chassis | Decide in phase 4 from the lawn test of the M1 (phase 0) and what stage 1 has shown | Phase 4 |
+| D8 | Outdoor chassis | Decide in phase 4 from the phase 3 outdoor tests and what stage 1 has shown. It must carry the Jetson, lidar, cameras, GNSS and a spray tank, and drive on real lawn | Phase 4 |
 
 ## 5. How a spray decision works
 
