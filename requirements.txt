@@ -1,3 +1,0 @@
-# Install the companion package in editable mode with development tools.
-# Dependencies themselves are declared in pyproject.toml.
--e .[dev]

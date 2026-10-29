@@ -1,0 +1,42 @@
+# Risks and Open Questions
+
+Ranked by how likely each risk is to stop the project, and what we do about it.
+Review this list at the end of every phase in the [project plan](project-plan.md).
+
+## Risks
+
+| # | Risk | Likelihood | Impact | Mitigation | Phase |
+|---|---|---|---|---|---|
+| R1 | **Weed detection in the lawn is not good enough** (shade under trees, mixed lawn, small weeds) | High | High | Our own dataset from the real garden. Camera hood + LED lighting for even light. Segmentation model. Measure P1 before building autonomy | 0–1 |
+| R2 | **Spray misses** because of timing, wind or camera calibration | Medium | High | Short camera-to-nozzle distance, low nozzle height, spray shield. Test on paper targets first | 1 |
+| R3 | **RTK doesn't work in large parts of the garden** (trees, house walls) | High | Medium | Phase 0 GNSS survey before choosing a fix. Fusion with IMU and odometry. Camera-based localization or UWB in the problem areas. Slow down or stop when uncertain | 0, 3, 5 |
+| R4 | **Rules prevent using a real herbicide from a robot** | Medium | High | Ask Miljøstyrelsen in phase 0. Water for all development. Swappable treatment head (hot water, mechanical) | 0 |
+| R5 | **Scope creep**: building 4WS, radar and our own INS before the MVP works (the v1 problem) | High | High | Research tracks are explicitly phase 6. Each phase has an exit criterion. "Reuse first" rule | All |
+| R6 | **Integration with ROS 2 takes longer than expected** for a team new to it | Medium | Medium | Start from OpenMower's or community ROS 2 examples. Simulate in Gazebo before the garden. Keep our own nodes small | 2–3 |
+| R7 | **Safety incident** (robot drives into a person, animal or flower bed) | Low | High | E-stop, wireless stop, watchdog, geofence, low speed, bumper from phase 2 | 2+ |
+| R8 | **Weather and water damage** to the electronics | Medium | Medium | Splash-proof enclosures, cable glands, don't run in rain at first | 2+ |
+| R9 | **Treatment doesn't kill perennial weeds** (e.g. dandelion grows back from its root) | Medium | Medium | Follow-up visits (F5) measure this. Repeat treatment. Mechanical tool as an alternative | 5 |
+| R10 | **Licence conflict** when reusing (e.g. OpenMower documentation is non-commercial) | Low | Medium | Check each licence before copying. Keep our own code under a clear licence | 0 |
+
+## Open questions
+
+| # | Question | How we answer it | Needed by |
+|---|---|---|---|
+| Q1 | How much of the garden has RTK fix? Where are the dead zones? | GNSS survey | End of phase 0 |
+| Q2 | Is an NTRIP correction service available and affordable at the address, or do we need our own base? | Check providers; otherwise build a base | Phase 0 |
+| Q3 | OpenMower conversion or hoverboard base? | Look for a compatible used mower; compare cost and time | Phase 0 |
+| Q4 | Which weeds matter most in the target garden? | Photo survey and labelling | Phase 1 |
+| Q5 | May an approved ready-to-use product be applied by an automated spot sprayer in a private garden? | Written question to Miljøstyrelsen | Phase 0 (answer before phase 4) |
+| Q6 | UM980 or ZED-F9P? | Compatibility with the chosen base (OpenMower uses ArduSimple boards); community support | Phase 0 |
+| Q7 | Is a Raspberry Pi 5 + accelerator fast enough for detection at working speed? | Benchmark in phase 1 | Phase 1 |
+| Q8 | Which licence for SprayRover itself (e.g. MIT for code, CERN-OHL for hardware)? | Team decision | Phase 0 |
+
+## What v1 taught us
+
+- The v1 repository is still on the `dev` and `main` branches: tidied design notes, an architecture draft,
+  CI, and 4-wheel-steering kinematics with tests and a viewer. Nothing is lost.
+- **Lesson 1:** v1 started with the chassis and its own Kalman filter, the parts that are least unique and
+  most work. v2 starts with weeds.
+- **Lesson 2:** pinning dependency versions saves time. SimpleFOC broke on a new STM32 core release in v1.
+  v2 pins ROS 2, OWL and model versions too.
+- **Lesson 3:** a visual prototype is useful early. v2 keeps doing quick demos: push cart, then remote control, then autonomy.
