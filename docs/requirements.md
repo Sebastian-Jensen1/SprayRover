@@ -6,6 +6,9 @@ tests can refer to it.
 
 Priority: **M** = must (first useful version), **S** = should, **L** = later.
 
+Development starts on the robot the team has bought, the [Yahboom ROSMASTER M1](platform-rosmaster-m1.md).
+Some requirements (lawn driving, weather) can only be met fully on the outdoor chassis planned for phase 4.
+
 ## 1. Use case
 
 A private Danish garden: lawn, beds, gravel paths, terraces, trees and house walls. SprayRover drives around
@@ -54,9 +57,10 @@ telling crop from weed in a bed is the hardest problem.
 
 | ID | Constraint |
 |---|---|
-| C1 | **Cost:** prototype hardware target ≤ 15,000 DKK, excluding tools and an optional RTK base station. Re-use off-the-shelf parts and dev kits before designing PCBs |
+| C1 | **Cost:** the ROSMASTER M1 is already bought. Stage 1 add-ons ≤ 5,500 DKK, the outdoor chassis ≤ 8,000 DKK, excluding tools and an optional RTK base station. Re-use off-the-shelf parts before designing PCBs |
 | C2 | **Legal:** development with water only. Real use only with products approved for private use, applied according to their label |
 | C3 | **Safety:** E-stop, wireless stop, watchdog, geofence, low speed, normally-closed valve (see [regulations-and-safety.md](regulations-and-safety.md)) |
 | C4 | **Open source:** our own code and designs are published. Reused parts must allow this; check licences such as OpenMower's CC BY-NC-SA documentation |
 | C5 | **Weather:** splash-proof electronics (IP54 as a target). Operating range 5–30 °C, dry or light drizzle |
-| C6 | **Team:** a small hobby team. Prefer existing software (ROS 2, OWL, OpenMower) over writing our own when the result is similar |
+| C6 | **Team:** a small hobby team. Prefer existing software (ROS 2, Nav2, Yahboom's M1 stack, OWL) over writing our own when the result is similar |
+| C7 | **Platform:** development starts on the [Yahboom ROSMASTER M1](platform-rosmaster-m1.md) (Jetson Orin Nano Super, ROS 2 Humble). SprayRover code only uses standard ROS 2 topics and services, so it can move to an outdoor chassis later |

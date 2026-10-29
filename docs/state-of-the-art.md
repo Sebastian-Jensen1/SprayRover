@@ -19,7 +19,7 @@ Researched October 2026. Vendor figures are the vendors' own claims unless noted
   - Acorn (open-source farm rover with four steerable, driven wheels)
   - FarmBot (garden robot with weed detection)
   - ROS 2 Nav2 with robot_localization and Fields2Cover (navigation and coverage planning)
-- **Conclusion for SprayRover:** most parts can be reused. What is new and valuable is the combination:
+- **Conclusion for SprayRover:** most parts can be reused, starting with the ROSMASTER M1 the team already has. What is new and valuable is the combination:
   a low-cost, open robot that **detects weeds in a lawn or garden, treats each one, remembers where it was,
   and works under trees.**
 
@@ -68,7 +68,7 @@ unsolved research problem, but it is a lot of integration work.
 
 | Project | What it is | What we can reuse |
 |---|---|---|
-| [OpenWeedLocator (OWL)](https://github.com/geezacoleman/OpenWeedLocator) | Raspberry Pi + camera + relay board that switches 12 V spray valves. Published in *Scientific Reports* (2022); MIT license, Python | **Our spray module, almost directly.** Green-on-brown detection (plants on soil, gravel, paths) works out of the box. Green-on-green (weeds in a lawn) has been added with a Coral accelerator. Supports Pi 5 + picamera2. A unit costs about $400 ([Raspberry Pi Magazine](https://magazine.raspberrypi.com/articles/open-weed-locator)) |
+| [OpenWeedLocator (OWL)](https://github.com/geezacoleman/OpenWeedLocator) | Raspberry Pi + camera + relay board that switches 12 V spray valves. Published in *Scientific Reports* (2022); MIT license, Python | **The design for our spray module** (relay board + 12 V valves). Its code is Python; check that it runs on the M1's Jetson. Green-on-brown detection (plants on soil, gravel, paths) works out of the box. Green-on-green (weeds in a lawn) has been added with a Coral accelerator. Supports Pi 5 + picamera2. A unit costs about $400 ([Raspberry Pi Magazine](https://magazine.raspberrypi.com/articles/open-weed-locator)) |
 | [OpenMower](https://github.com/ClemensElflein/OpenMower) | Turns a cheap robot mower (YardForce/SUMEC family) into an RTK-navigated one. Raspberry Pi + RP2040 + ArduSimple RTK. Navigation in ROS ([open_mower_ros](https://github.com/ClemensElflein/open_mower_ros)) | **A complete, working garden robot to start from:** chassis, motors, battery, RTK navigation, app. About €700 of hardware excluding the mower and base station. Documentation is CC BY-NC-SA (non-commercial); software is GPL/MIT per repository |
 | [Acorn (Twisted Fields)](https://twistedfields.readthedocs.io/en/latest/overview.html) | Open-source farm rover. 4 identical corners with drive and steering motors, RTK GNSS, Python on Raspberry Pi, SimpleFOC on RP2040 motor controllers | **Reference for the 4-wheel-steering design** from v1. Shows the corner-module approach works, but also how much mechanical work it is |
 | [FarmBot](https://software.farm.bot/v15/app/photos/weed-detection) | Gantry robot for raised beds. Takes photos, detects weeds by colour, marks them as "pending" on a map, removes them mechanically | **The weed-map concept:** detect, store position, treat, check again |
@@ -96,7 +96,14 @@ unsolved research problem, but it is a lot of integration work.
 | Laser / concentrated light | Commercial in farming (Carbon Robotics, Earth Rover); new for homes (GreenBeam) | Research with cheap diode lasers: 47–72% of weeds removed per pass, about 8 s per weed ([Mwitta et al. 2024](https://www.frontiersin.org/articles/10.3389/fagro.2024.1388452/full)). Serious eye-safety issues |
 | Mechanical (cut, pull, hoe) | Commercial (Tertill, Odd.Bot, FarmDroid, FarmBot) | No chemicals. Harder for perennial lawn weeds with deep roots (e.g. dandelion) |
 
-## 7. Where the gap is
+## 7. Educational ROS 2 robots (our starting platform)
+
+Yahboom's ROSMASTER series are low-cost educational ROS 2 robots with lidar, depth camera and Jetson or Raspberry Pi
+computers, and with a large set of tutorials (SLAM, Nav2, YOLO). The team has bought a **ROSMASTER M1**.
+It is built for indoor floors, not lawns, but it gives us a complete ROS 2 robot to develop the SprayRover software on.
+See [platform-rosmaster-m1.md](platform-rosmaster-m1.md).
+
+## 8. Where the gap is
 
 Nobody offers an **open, low-cost robot that maps and treats single weeds in a private garden, including
 under trees and along walls.**
