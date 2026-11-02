@@ -15,6 +15,7 @@ to compare aiding sources; the real rig will need tilt and lever arms added.
 from __future__ import annotations
 
 import math
+from collections import deque
 from dataclasses import dataclass
 
 import numpy as np
@@ -47,11 +48,16 @@ class FilterConfig:
     radar_sigma: float = 0.02  # m/s per beam
     gnss_gate: bool = True  # reject GNSS samples that disagree strongly (multipath)
     gnss_max_rejects: int = 5  # after this many rejections in a row, accept again
-    # Wheel-slip detection: skip a wheel update when it disagrees with the radar's own
-    # ground-speed estimate by more than slip_abs + slip_rel * |radar speed|.
+    # Wheel-slip detection: skip a wheel update when the wheel speed disagrees with the radar's
+    # own ground speed by more than slip_abs + slip_rel * |radar speed| + slip_k * sigma, where
+    # sigma is the uncertainty of the radar speed. Both speeds are averaged over slip_window
+    # seconds, so noisy radar doesn't force a loose threshold (slip_window = 0: latest values).
     slip_detection: bool = True
     slip_abs: float = 0.03  # m/s
     slip_rel: float = 0.05  # fraction of the speed; must exceed the wheel calibration error
+    slip_window: float = 0.5  # s
+    slip_k: float = 3.0  # how many standard deviations of the averaged radar speed to allow
+    slip_hold: float = 5.0  # s; after a detected slip, also skip the wheel for this long
 
 
 class PlanarEKF:
@@ -132,14 +138,27 @@ class PlanarEKF:
         self.gnss_rejected_in_row = 0 if accepted else self.gnss_rejected_in_row + 1
         return accepted
 
-    def update_wheel(self, speed: float, radar_speed: float | None = None) -> bool:
-        """Wheel forward speed plus "no sideways motion". With `radar_speed` (the radar's own
-        forward ground speed, measured at about the same time) slipping wheels are skipped."""
+    def update_wheel(
+        self,
+        speed: float,
+        radar_speed: float | None = None,
+        radar_sigma: float = 0.0,
+        wheel_avg: float | None = None,
+    ) -> bool:
+        """Wheel forward speed plus "no sideways motion".
+
+        With `radar_speed` (the radar's own forward ground speed, measured at about the same
+        time, with standard deviation `radar_sigma`) slipping wheels are skipped. `wheel_avg`
+        is the wheel speed averaged over the same time as the radar speed; without it the
+        single `speed` sample is compared.
+        """
         if not self.cfg.use_wheel:
             return False
         if self.cfg.slip_detection and self.cfg.use_radar and radar_speed is not None:
-            limit = self.cfg.slip_abs + self.cfg.slip_rel * abs(radar_speed)
-            if abs(speed - radar_speed) > limit:
+            c = self.cfg
+            limit = c.slip_abs + c.slip_rel * abs(radar_speed) + c.slip_k * radar_sigma
+            wheel = speed if wheel_avg is None else wheel_avg
+            if abs(wheel - radar_speed) > limit:
                 self.wheel_rejected_slip += 1
                 return False
         self.wheel_updates += 1
@@ -175,6 +194,46 @@ class PlanarEKF:
         return self._update(
             np.array([gyro_z]), np.array([self.x[BG]]), H, np.eye(1) * self.cfg.gyro_noise**2
         )
+
+
+class SlipWindow:
+    """Wheel and radar forward speeds over the last `window` seconds, for slip detection.
+
+    Averaging both over the same time cuts radar noise by about the square root of the number
+    of scans, and the spread of the radar speeds gives the uncertainty of their mean, so the
+    threshold adapts to the radar that is actually fitted.
+    """
+
+    def __init__(self, window: float, max_age: float = 0.25):
+        self.window = window
+        self.max_age = max_age
+        self.radar: deque[tuple[float, float]] = deque()
+        self.wheel: deque[tuple[float, float]] = deque()
+
+    def _trim(self, t: float) -> None:
+        for q in (self.radar, self.wheel):
+            while q and q[0][0] < t - self.window:
+                q.popleft()
+
+    def add_radar(self, t: float, forward_speed: float) -> None:
+        self.radar.append((t, forward_speed))
+        self._trim(t)
+
+    def add_wheel(self, t: float, speed: float) -> None:
+        self.wheel.append((t, speed))
+        self._trim(t)
+
+    def compare(self, t: float) -> tuple[float, float, float] | None:
+        """(mean radar speed, its standard deviation, mean wheel speed), or None when the
+        newest radar speed is older than `max_age`."""
+        if not self.radar or t - self.radar[-1][0] > self.max_age:
+            return None
+        if self.window <= 0:
+            return self.radar[-1][1], 0.0, self.wheel[-1][1] if self.wheel else float("nan")
+        r = np.array([v for _, v in self.radar])
+        w = np.array([v for _, v in self.wheel]) if self.wheel else np.array([np.nan])
+        sigma = float(r.std(ddof=1) / math.sqrt(len(r))) if len(r) >= 3 else 0.0
+        return float(r.mean()), sigma, float(w.mean())
 
 
 def radar_body_velocity(beams: np.ndarray, radial: np.ndarray) -> np.ndarray | None:

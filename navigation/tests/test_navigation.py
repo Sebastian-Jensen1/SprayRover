@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pytest
 
-from landdvl.ekf import FilterConfig, PlanarEKF, radar_body_velocity
+from landdvl.ekf import FilterConfig, PlanarEKF, SlipWindow, radar_body_velocity
 from landdvl.evaluate import artificial_outages, summary_table
 from landdvl.logio import Log, read_log, write_log
 from landdvl.runner import Replay
@@ -112,6 +112,42 @@ def test_slip_detection_skips_slipping_wheel():
     assert ekf.wheel_rejected_slip == 1
     off = PlanarEKF(FilterConfig(slip_detection=False), np.zeros(8), np.ones(8) * 0.01)
     assert off.update_wheel(0.65, radar_speed=0.50)
+
+
+def test_slip_window_averages_noisy_radar():
+    rng = np.random.default_rng(0)
+    win = SlipWindow(window=0.5)
+    for k in range(40):  # 2 s of 20 Hz radar with 0.05 m/s noise, 50 Hz wheel
+        t = k * 0.05
+        win.add_radar(t, 0.5 + rng.normal(0, 0.05))
+        win.add_wheel(t, 0.5)
+        win.add_wheel(t + 0.02, 0.5)
+    radar_mean, sigma, wheel_mean = win.compare(t + 0.02)
+    assert 10 <= len(win.radar) <= 11  # only the last 0.5 s is kept
+    assert abs(radar_mean - 0.5) < 0.05
+    assert 0.005 < sigma < 0.03  # about 0.05 / sqrt(11)
+    assert wheel_mean == pytest.approx(0.5)
+    assert win.compare(t + 1.0) is None  # radar too old
+
+
+def test_noise_adaptive_threshold():
+    ekf = PlanarEKF(FilterConfig(), np.zeros(8), np.ones(8) * 0.01)
+    # 0.06 m/s difference: slip if the radar mean is precise, accepted if it is uncertain.
+    assert not ekf.update_wheel(0.56, radar_speed=0.50, radar_sigma=0.0)
+    assert ekf.update_wheel(0.56, radar_speed=0.50, radar_sigma=0.02)
+    # the averaged wheel speed is compared, not the single sample
+    assert ekf.update_wheel(0.70, radar_speed=0.50, wheel_avg=0.51)
+
+
+def test_slip_hold_skips_wheel_after_detection(small_log):
+    replay = Replay(small_log)
+    counts = {}
+    for hold in (0.0, 5.0):
+        ekf = replay.initial_filter(FilterConfig(slip_hold=hold))
+        replay.run(ekf, 0.0, float("inf"))
+        counts[hold] = ekf.wheel_rejected_slip
+    assert counts[0.0] > 0
+    assert counts[5.0] > counts[0.0]
 
 
 def test_sweep_cases_and_report(tmp_path):
