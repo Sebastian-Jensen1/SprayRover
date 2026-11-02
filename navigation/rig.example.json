@@ -1,0 +1,18 @@
+{
+  "metres_per_tick": 0.000524,
+  "wheel_sign": 1.0,
+  "imu_axes": ["x", "y", "z"],
+  "start_yaw_rad": 1.5708,
+  "static_start_s": 120.0,
+  "radar": {
+    "yaw_deg": 180.0,
+    "tilt_down_deg": 45.0,
+    "height_m": 0.5,
+    "doppler_sign": 1.0,
+    "frame_period_s": 0.05,
+    "min_range_m": 0.3,
+    "max_range_m": 4.0,
+    "ground_tolerance_m": 0.15
+  },
+  "notes": "Example values. Replace them with your own calibration (docs/navigation/rig-logger.md)."
+}
