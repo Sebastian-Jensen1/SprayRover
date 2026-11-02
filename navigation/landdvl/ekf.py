@@ -47,6 +47,11 @@ class FilterConfig:
     radar_sigma: float = 0.02  # m/s per beam
     gnss_gate: bool = True  # reject GNSS samples that disagree strongly (multipath)
     gnss_max_rejects: int = 5  # after this many rejections in a row, accept again
+    # Wheel-slip detection: skip a wheel update when it disagrees with the radar's own
+    # ground-speed estimate by more than slip_abs + slip_rel * |radar speed|.
+    slip_detection: bool = True
+    slip_abs: float = 0.03  # m/s
+    slip_rel: float = 0.05  # fraction of the speed; must exceed the wheel calibration error
 
 
 class PlanarEKF:
@@ -56,6 +61,8 @@ class PlanarEKF:
         self.P = np.diag(p0_diag.astype(float))
         self.last_acc_body = np.zeros(2)
         self.gnss_rejected_in_row = 0
+        self.wheel_updates = 0
+        self.wheel_rejected_slip = 0
 
     # ---------------------------------------------------------------- predict
     def predict(self, gyro_z: float, acc_x: float, acc_y: float, dt: float) -> None:
@@ -125,9 +132,17 @@ class PlanarEKF:
         self.gnss_rejected_in_row = 0 if accepted else self.gnss_rejected_in_row + 1
         return accepted
 
-    def update_wheel(self, speed: float) -> bool:
+    def update_wheel(self, speed: float, radar_speed: float | None = None) -> bool:
+        """Wheel forward speed plus "no sideways motion". With `radar_speed` (the radar's own
+        forward ground speed, measured at about the same time) slipping wheels are skipped."""
         if not self.cfg.use_wheel:
             return False
+        if self.cfg.slip_detection and self.cfg.use_radar and radar_speed is not None:
+            limit = self.cfg.slip_abs + self.cfg.slip_rel * abs(radar_speed)
+            if abs(speed - radar_speed) > limit:
+                self.wheel_rejected_slip += 1
+                return False
+        self.wheel_updates += 1
         v_body, dvb_dv, dvb_dyaw = self._body_velocity()
         H = np.zeros((2, N))
         H[:, VX : VY + 1] = dvb_dv
@@ -160,3 +175,22 @@ class PlanarEKF:
         return self._update(
             np.array([gyro_z]), np.array([self.x[BG]]), H, np.eye(1) * self.cfg.gyro_noise**2
         )
+
+
+def radar_body_velocity(beams: np.ndarray, radial: np.ndarray) -> np.ndarray | None:
+    """Least-squares body velocity (forward, left) from one radar scan, without the filter.
+
+    Each beam measures radial = -(u . v_body) with zero vertical velocity. Needs two beams with
+    different horizontal directions; with a single beam, sideways motion is assumed to be zero.
+    """
+    if len(radial) == 0:
+        return None
+    U = -np.asarray(beams, dtype=float)[:, :2]
+    z = np.asarray(radial, dtype=float)
+    if len(z) == 1 or np.linalg.matrix_rank(U) < 2:
+        ux = U[:, 0]
+        if np.allclose(ux, 0):
+            return None
+        return np.array([float(ux @ z / (ux @ ux)), 0.0])
+    v, *_ = np.linalg.lstsq(U, z, rcond=None)
+    return v

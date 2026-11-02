@@ -3,7 +3,7 @@ import math
 import numpy as np
 import pytest
 
-from landdvl.ekf import FilterConfig
+from landdvl.ekf import FilterConfig, PlanarEKF, radar_body_velocity
 from landdvl.evaluate import artificial_outages, summary_table
 from landdvl.logio import Log, read_log, write_log
 from landdvl.runner import Replay
@@ -94,3 +94,43 @@ def test_point_cloud_radar_rows_match_beam_rows(small_log):
     est_a, _ = a.run(a.initial_filter(FilterConfig()), 0.0, 80.0)
     est_b, _ = b.run(b.initial_filter(FilterConfig()), 0.0, 80.0)
     assert np.allclose(est_a, est_b)
+
+
+def test_radar_body_velocity_least_squares():
+    beams = SensorModel().beam_unit_vectors()
+    v_true = np.array([0.4, -0.1, 0.0])
+    v = radar_body_velocity(beams, -beams @ v_true)
+    assert np.allclose(v, v_true[:2])
+    single = radar_body_velocity(beams[:1], -beams[:1] @ np.array([0.4, 0.0, 0.0]))
+    assert np.allclose(single, [0.4, 0.0])
+
+
+def test_slip_detection_skips_slipping_wheel():
+    ekf = PlanarEKF(FilterConfig(), np.zeros(8), np.ones(8) * 0.01)
+    assert ekf.update_wheel(0.50, radar_speed=0.49)  # agrees: used
+    assert not ekf.update_wheel(0.65, radar_speed=0.50)  # 30 % slip: skipped
+    assert ekf.wheel_rejected_slip == 1
+    off = PlanarEKF(FilterConfig(slip_detection=False), np.zeros(8), np.ones(8) * 0.01)
+    assert off.update_wheel(0.65, radar_speed=0.50)
+
+
+def test_sweep_cases_and_report(tmp_path):
+    from landdvl import sweep
+
+    todo = sweep.cases([1, 2], windows=5)
+    n_values = sum(len(v) for v in sweep.DIMENSIONS.values())
+    assert len(todo) == 2 * n_values
+    cfg = sweep.filter_for(SensorModel(radar_noise=0.05))
+    assert cfg.radar_sigma == pytest.approx(0.1)
+
+    rows = []
+    for dim, values in sweep.DIMENSIONS.items():
+        for label, x, _ in values:
+            for s, err in zip(sweep.SETS, (1.0, 0.4, 0.2), strict=True):
+                rows.append(
+                    dict(dimension=dim, value=label, x=x, seed=1, sensor_set=s,
+                         median_10s=0.1, median_30s=err, median_60s=err, p90_30s=err)
+                )  # fmt: skip
+    text = sweep.write_outputs(rows, tmp_path, [1])
+    assert "| 0.40 |" in text  # ratio column
+    assert (tmp_path / "sweep.csv").exists()

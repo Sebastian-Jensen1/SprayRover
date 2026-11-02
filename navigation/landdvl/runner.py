@@ -7,10 +7,11 @@ from dataclasses import dataclass, replace
 
 import numpy as np
 
-from landdvl.ekf import PX, PY, YAW, FilterConfig, PlanarEKF
+from landdvl.ekf import PX, PY, YAW, FilterConfig, PlanarEKF, radar_body_velocity
 from landdvl.logio import Log
 
 IMU, GNSS, WHEEL, RADAR = 0, 1, 2, 3
+RADAR_SPEED_MAX_AGE = 0.25  # s; a radar speed older than this is not used for slip checks
 
 
 @dataclass
@@ -71,6 +72,7 @@ class Replay:
         """Process events in [t_start, t_end). Returns estimates [t, x, y, yaw] and snapshots."""
         i = bisect.bisect_left(self.times, t_start)
         last_imu_t: float | None = None
+        radar_speed: tuple[float, float] | None = None  # (time, forward ground speed)
         next_record = t_start
         next_snap = t_start
         out: list[tuple[float, float, float, float]] = []
@@ -89,10 +91,14 @@ class Replay:
                 if gnss_off is None or not (gnss_off[0] <= t < gnss_off[1]):
                     ekf.update_gnss(*data)
             elif kind == WHEEL and t >= self.static_until:
-                ekf.update_wheel(data)
+                fresh = radar_speed is not None and t - radar_speed[0] <= RADAR_SPEED_MAX_AGE
+                ekf.update_wheel(data, radar_speed[1] if fresh else None)
             elif kind == RADAR and t >= self.static_until:
                 dirs, vals = data
                 ekf.update_radar(dirs, vals)
+                v_radar = radar_body_velocity(dirs, vals)
+                if v_radar is not None:
+                    radar_speed = (t, float(v_radar[0]))
             if t >= next_record:
                 out.append((t, ekf.x[PX], ekf.x[PY], ekf.x[YAW]))
                 next_record += record_every
