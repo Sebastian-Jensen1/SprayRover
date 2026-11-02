@@ -57,9 +57,11 @@ ruff check . && ruff format --check .        # lint/format (line length 100)
 python -m landdvl.sim --out logs/sim01       # simulated log (mock data)
 python -m landdvl.evaluate logs/sim01        # artificial GNSS-outage test + plots
 python -m landdvl.sweep --out results/sweep  # sensitivity analysis (slow; --quick for a short run)
+python -m landdvl.rig.loopback logs/sim01 logs/sim01_lb  # rig logger test without hardware
 ```
 - The log format in `landdvl/logio.py` is shared by the simulator and the real measurement rig. Keep them
-  compatible, and keep real-log support (no `truth.csv`) working.
+  compatible, and keep real-log support (no `truth.csv`) working. The rig logger lives in `landdvl/rig/`
+  (docs: `docs/navigation/rig-logger.md`); its loopback test checks the two stay compatible.
 - Validate results before reporting them. Look at the plots and sanity-check the numbers. Earlier bugs were
   found exactly this way.
 - CI (`.github/workflows/navigation.yml`) runs lint, tests and a sim + evaluate smoke run on PRs to `v2`.

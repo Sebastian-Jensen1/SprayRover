@@ -6,8 +6,8 @@ is not a robot. It records GNSS, IMU, wheel speed and radar on one clock, in the
 [evaluation software](../../navigation/README.md) can test whether radar halves the error growth when GNSS
 disappears.
 
-**Prices:** only the ArduSimple board was verified during research (October 2026). Everything else is an
-**estimate (est.)**; check before ordering.
+**Prices:** the ArduSimple board (October 2026) and the TI radar board (DigiKey, November 2026) were
+checked. Everything else is an **estimate (est.)**; check before ordering.
 
 ## 1. Shopping list
 
@@ -19,7 +19,7 @@ disappears.
 | 2 | **Multiband GNSS antenna** (L1/L2/L5, e.g. ArduSimple's own) + SMA cable | The board doesn't include an antenna, and RTK needs a multiband one | est. 500–1,200 DKK |
 | 3 | **RTK corrections:** an NTRIP service, **or** a second simpleRTK3B + antenna as your own base station on the roof | RTK fix needs corrections. Check what NTRIP is available at your address first | NTRIP: subscription (est.). Own base: ~€223 + antenna |
 | 4 | **IMU breakout: TDK ICM-42688-P** (SPI/I²C) | Raw rotation and acceleration at 200+ Hz. The same family as in the v1 notes | est. 150–300 DKK |
-| 5 | **TI mmWave radar evaluation board**, e.g. **IWR6843AOPEVM** (antenna-on-package, wide field of view, USB) | Measures the speed of ground points (Doppler). One wide radar tilted down gives many "beams" from one board | est. 1,000–2,500 DKK, check DigiKey/Mouser |
+| 5 | **TI mmWave radar evaluation board IWR6843AOPEVM** (antenna-on-package, 120° × 120° field of view, USB) | Measures the speed of ground points (Doppler). One wide radar tilted down gives many "beams" from one board, which meets the "at least 2 sideways directions" requirement from the [sensitivity analysis](sensitivity.md) | **US$206.51** at DigiKey, status Active, 92 in stock, limit one per 30 days ([DigiKey](https://www.digikey.com/en/products/result?keywords=IWR6843AOPEVM), checked 2 Nov 2026). Field of view: [TI](https://ti.com/document-viewer/lit/html/TIDUEP1A/iwr6843aop-antenna-on-package-evm-id-d7a1c560-4a49-4c58-8dc4-c297aa47ce9a.html). Plus Danish VAT and shipping |
 | 6 | **Incremental rotary encoder** (e.g. 600 pulses/rev) with a small rubber wheel pressed against the trolley wheel, or a Hall sensor + magnets on the hub | Wheel speed, like a robot's wheel odometry | est. 100–250 DKK |
 
 ### Electronics and logging
@@ -43,6 +43,21 @@ disappears.
 
 **Total excluding base station: about 4,500–8,000 DKK (est.).** The GNSS board, antenna, IMU and radar are
 all reused later on SprayRover or on a navigation-module prototype.
+
+### Which GNSS board? (open question Q6)
+
+**Recommendation: keep the simpleRTK3B Budget (Unicore UM980).**
+- The rig logger only needs standard NMEA (GGA + GST), which both the UM980 and the u-blox ZED-F9P send.
+  So the choice doesn't matter for the rig software.
+- The UM980 is triple-band (better RTK fix near trees) and was ~€223 in October 2026.
+- The ZED-F9P has the better ROS 2 support: dedicated drivers such as
+  [ublox_dgnss](https://github.com/aussierobots/ublox_dgnss/wiki). For the UM980 the route on the robot is a
+  generic NMEA driver such as [nmea_navsat_driver](https://github.com/ros-drivers/nmea_navsat_driver). No
+  ROS 2 driver made for the UM980 was found.
+- Choose the ZED-F9P (simpleRTK2B, ~€156–211 depending on kit,
+  [ArduSimple](https://www.ardusimple.com/?p=1766)) only if ROS 2 integration on the robot matters more than
+  the third band. ArduSimple's product pages refused automated access on 2 Nov 2026, so **check both prices
+  before ordering**.
 
 ## 2. How it fits together
 
@@ -87,7 +102,8 @@ flowchart LR
 - Radar → laptop via USB, running TI's standard out-of-box demo firmware (point cloud with Doppler).
 
 ### Step 4: Software (logger)
-The logger still has to be written; it is the **first real code task on the rig**:
+**Written (November 2026), tested without hardware.** See [rig-logger.md](rig-logger.md) for how to run it,
+the checks to do before the first session, and the limits. What it does:
 
 | Source | What the logger does | Writes to |
 |---|---|---|
