@@ -1,0 +1,30 @@
+name: Navigation
+
+on:
+  pull_request:
+    branches: [v2]
+    paths: ["navigation/**", ".github/workflows/navigation.yml"]
+  push:
+    branches: [v2]
+    paths: ["navigation/**", ".github/workflows/navigation.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: navigation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[dev,plot]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: python -m pytest -q
+      - name: Simulate and evaluate (smoke run)
+        run: |
+          python -m landdvl.sim --out logs/ci --seed 1
+          python -m landdvl.evaluate logs/ci --windows 5 --no-plots

@@ -12,3 +12,5 @@ Read in this order:
 | [project-plan.md](project-plan.md) | Phases 0–6 with demos, exit criteria, rough budget and way of working |
 | [risks-and-open-questions.md](risks-and-open-questions.md) | What can stop the project, what we still need to find out, and what v1 taught us |
 | [business/](business/README.md) | **Business analysis:** navigation module market, and weed robots for municipalities, housing associations and cemeteries |
+| [navigation/measurement-rig.md](navigation/measurement-rig.md) | **Measurement rig:** shopping list and build guide for the GNSS/IMU/wheel/radar trolley |
+| [../navigation/](../navigation/README.md) | **Navigation software:** simulator (mock data), Kalman filter and the radar outage test |
