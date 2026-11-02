@@ -266,13 +266,19 @@ def main() -> None:
     parser.add_argument("--out", default=None, help="results folder (default: results/<log name>)")
     parser.add_argument("--windows", type=int, default=25)
     parser.add_argument("--no-plots", action="store_true")
+    parser.add_argument(
+        "--no-slip-detection",
+        action="store_true",
+        help="don't use the radar to reject slipping wheel measurements",
+    )
     args = parser.parse_args()
 
     log = read_log(args.log)
     out = Path(args.out or Path("results") / Path(args.log).name)
     out.mkdir(parents=True, exist_ok=True)
 
-    starts, results, _ = artificial_outages(log, count=args.windows)
+    base = FilterConfig(slip_detection=not args.no_slip_detection)
+    starts, results, _ = artificial_outages(log, count=args.windows, base=base)
     if not starts:
         raise SystemExit(
             "No suitable outage windows found. Real logs need stretches of 60+ s of driving "
@@ -284,7 +290,7 @@ def main() -> None:
     runs, full_errors = {}, {}
     ref = reference_track(log)
     for name in ("IMU + wheel", "IMU + wheel + radar"):
-        est = full_run(log, name)
+        est = full_run(log, name, base=base)
         runs[name] = est
         if ref.everywhere:  # only the simulator knows the truth under the trees
             truth = reference_position(ref, est[:, 0])

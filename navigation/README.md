@@ -32,6 +32,7 @@ The evaluation writes `results/sim01/report.md`, `error_growth.png` and `garden_
 | `landdvl/ekf.py` | Planar extended Kalman filter: IMU prediction; GNSS, wheel, radar, zero-velocity and zero-rate updates; outlier gate for multipath with recovery |
 | `landdvl/runner.py` | Replays a log through the filter. Can switch GNSS off in a time window |
 | `landdvl/evaluate.py` | The artificial outage test: start from a converged filter under open sky, switch GNSS off for 60 s, compare sensor sets against the truth |
+| `landdvl/sweep.py` | Sensitivity analysis: varies radar noise, beam count, tilt and rate, and IMU grade, over several seeds, in parallel |
 
 ## How the test works
 
@@ -46,23 +47,29 @@ The evaluation writes `results/sim01/report.md`, `error_growth.png` and `garden_
    - **Real logs:** the truth is the RTK fix itself, so real outage windows must be driven in the open.
      GNSS is only switched off inside the filter.
 
-## First result (simulated, seed 1, 25 windows)
+## Results (simulated, seed 1, 25 windows)
+
+With radar-based **wheel-slip detection** (the filter skips wheel updates that disagree with the radar's own
+ground speed by more than 0.03 m/s + 5 %):
 
 | Sensor set | median 10 s | median 30 s | median 60 s |
 |---|---|---|---|
-| IMU + wheel | 0.08 m | 1.36 m | 1.53 m |
-| IMU + wheel + radar | 0.06 m | 0.67 m | 0.71 m |
-| IMU + radar | 0.04 m | 0.17 m | 0.23 m |
+| IMU + wheel | 0.09 m | 1.36 m | 1.54 m |
+| IMU + wheel + radar | 0.05 m | 0.23 m | 0.29 m |
+| IMU + radar | 0.04 m | 0.19 m | 0.23 m |
 
-Radar ratio at 30 s: **0.49** (with radar / without).
+The radar ratio at 30 s is **0.17**, against 0.49 without slip detection (`--no-slip-detection`). Over the
+whole run with real GNSS, the maximum error drops from 2.31 m (IMU + wheel) to 0.30 m.
 
-**This only proves the pipeline works and that the idea is plausible under the assumed noise levels**
+**This shows the pipeline works and that the idea is plausible under the assumed noise levels**
 (`SensorModel` in `sim.py`). The real answer comes from real data.
 
-The result also points to the first improvement. With radar on board, the wheel's slip under the trees still
-pulls the estimate off, so "IMU + radar" beats "IMU + wheel + radar". **Use the radar to detect wheel slip
-and down-weight or reject the wheel during slip.** This is a classic radar-vs-wheel technique and a good
-first task.
+**Which radar is good enough?** See the sensitivity analysis in
+[docs/navigation/sensitivity.md](../docs/navigation/sensitivity.md) (`python -m landdvl.sweep`). In short:
+- radar velocity noise ≤ 0.01–0.02 m/s per beam,
+- at least 2 beam directions that differ sideways,
+- tilt 30–60° from straight down,
+- at least 10–20 Hz.
 
 ## Known simplifications (to fix before real data)
 
@@ -79,7 +86,7 @@ first task.
 
 ## Ideas for the filter work
 
-- Slip detection: compare radar and wheel speed, inflate `wheel_sigma` or skip wheel updates during slip.
+- Better slip handling for noisy radar: average speeds over ~0.5 s, or estimate slip as a filter state.
 - Radar outlier rejection (moving grass, puddles, the trolley's own frame in the beam).
 - Error-state formulation in 3D with a proper IMU mechanisation.
 - Tune `FilterConfig` noise values from static data recorded with the real sensors (Allan variance).
