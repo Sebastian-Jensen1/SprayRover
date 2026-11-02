@@ -1,5 +1,7 @@
 # SprayRover v2 documentation
 
+**Don't know an abbreviation?** See the [ordliste.md](ordliste.md) (glossary, in Danish).
+
 Read in this order:
 
 | Document | What it answers |
