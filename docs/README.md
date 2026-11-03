@@ -15,5 +15,6 @@ Read in this order:
 | [risks-and-open-questions.md](risks-and-open-questions.md) | What can stop the project, what we still need to find out, and what v1 taught us |
 | [business/](business/README.md) | **Business analysis:** navigation module market, and weed robots for municipalities, housing associations and cemeteries |
 | [navigation/measurement-rig.md](navigation/measurement-rig.md) | **Measurement rig:** shopping list and build guide for the GNSS/IMU/wheel/radar trolley |
+| [navigation/rig-logger.md](navigation/rig-logger.md) | **Rig logger:** the software that records the trolley's sensors, the checks before the first session, and the loopback test |
 | [../navigation/](../navigation/README.md) | **Navigation software:** simulator (mock data), Kalman filter and the radar outage test |
 | [navigation/sensitivity.md](navigation/sensitivity.md) | **Which radar is good enough?** Sensitivity analysis (simulated) and wheel-slip detection results |

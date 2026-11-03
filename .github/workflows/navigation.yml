@@ -28,3 +28,5 @@ jobs:
         run: |
           python -m landdvl.sim --out logs/ci --seed 1
           python -m landdvl.evaluate logs/ci --windows 5 --no-plots
+      - name: Rig logger loopback (smoke run)
+        run: python -m landdvl.rig.loopback logs/ci logs/ci_loopback

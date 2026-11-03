@@ -70,7 +70,6 @@ def filter_for(model: SensorModel) -> FilterConfig:
         gyro_bias_walk=model.gyro_bias_walk,
         acc_bias_walk=model.acc_bias_walk,
         radar_sigma=max(0.01, 2 * model.radar_noise),
-        slip_abs=max(0.03, 3 * model.radar_noise),
     )
 
 

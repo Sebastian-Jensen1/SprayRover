@@ -32,7 +32,11 @@ Review this list at the end of every phase in the [project plan](project-plan.md
 | Q3 | Which outdoor chassis: converted robot mower, hoverboard base or 4-wheel steering? | Phase 3 outdoor tests and stage 1 results | Phase 4 |
 | Q4 | Which weeds matter most in the target garden? | Photo survey and labelling | Phase 1 |
 | Q5 | May an approved ready-to-use product be applied by an automated spot sprayer in a private garden? | Written question to Miljøstyrelsen | Phase 0 (answer before phase 4) |
-| Q6 | UM980 or ZED-F9P? | Both work over USB with the Jetson; choose on ROS 2 driver support and community | Phase 0 |
+| Q6 | ~~UM980 or ZED-F9P?~~ **Recommended: UM980** (simpleRTK3B Budget). The rig logger only needs NMEA; ZED-F9P has better ROS 2 drivers. See [measurement-rig.md](navigation/measurement-rig.md#which-gnss-board-open-question-q6). Check prices before ordering | Phase 0 |
+| Q11 | TI radar: which way are its axes, and which sign does its Doppler have? Not stated in TI's output-format document | Radar sign check in [rig-logger.md](navigation/rig-logger.md#radar-sign-check-must-do) | First rig session |
+| Q12 | Real radar velocity noise per ground point. TI states 0.05 m/s resolution for its IWR6843 reference design; our estimate of the noise from that is ≈ 0.014 m/s, and the requirement is ≤ 0.01–0.02 m/s | Rig: stand still, then push at a known speed | First rig session |
+| Q13 | Constant delay of each sensor (GNSS, radar) relative to the IMU. The logger removes jitter but not constant delay | Estimate from `pps.csv` or by time-shift fitting on real logs | Before tuning the filter |
+| Q14 | Does the Pico firmware compile and run? Not yet tested on hardware; the SPI read flag 0x80 is not verified from a source | Build in the Arduino IDE, check `WHO_AM_I=0x47` | When the parts arrive |
 | Q7 | Is the Orin Nano Super fast enough for YOLOv11 segmentation at working speed? | Benchmark in phase 0/1 | Phase 1 |
 | Q8 | Which licence for SprayRover itself (e.g. MIT for code, CERN-OHL for hardware)? | Team decision | Phase 0 |
 | Q9 | ~~Mecanum or Ackermann?~~ **Answered: mecanum** (Yahboom's official parameters). Still to confirm: Superior kit (depth camera) or Standard (pan-tilt camera), which lidar | Check the robot and `~/.bashrc` | Phase 0, week 1 |

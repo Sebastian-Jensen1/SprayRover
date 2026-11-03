@@ -33,6 +33,8 @@ The evaluation writes `results/sim01/report.md`, `error_growth.png` and `garden_
 | `landdvl/runner.py` | Replays a log through the filter. Can switch GNSS off in a time window |
 | `landdvl/evaluate.py` | The artificial outage test: start from a converged filter under open sky, switch GNSS off for 60 s, compare sensor sets against the truth |
 | `landdvl/sweep.py` | Sensitivity analysis: varies radar noise, beam count, tilt and rate, and IMU grade, over several seeds, in parallel |
+| `landdvl/rig/` | **Logger for the real measurement rig** (Pico IMU/encoder, GNSS NMEA, TI radar) and a loopback test without hardware. See [docs/navigation/rig-logger.md](../docs/navigation/rig-logger.md) |
+| `firmware/pico_logger/` | Pico 2 firmware for the rig (not yet run on hardware) |
 
 ## How the test works
 
@@ -49,24 +51,24 @@ The evaluation writes `results/sim01/report.md`, `error_growth.png` and `garden_
 
 ## Results (simulated, seed 1, 25 windows)
 
-With radar-based **wheel-slip detection** (the filter skips wheel updates that disagree with the radar's own
-ground speed by more than 0.03 m/s + 5 %):
+With radar-based **wheel-slip detection** (version 2: wheel and radar speeds averaged over 0.5 s, a threshold
+that adapts to the measured radar noise, and a 5 s hold-off after each detected slip):
 
 | Sensor set | median 10 s | median 30 s | median 60 s |
 |---|---|---|---|
-| IMU + wheel | 0.09 m | 1.36 m | 1.54 m |
-| IMU + wheel + radar | 0.05 m | 0.23 m | 0.29 m |
-| IMU + radar | 0.04 m | 0.19 m | 0.23 m |
+| IMU + wheel | 0.09 m | 1.36 m | 1.55 m |
+| IMU + wheel + radar | 0.06 m | 0.21 m | 0.27 m |
+| IMU + radar | 0.04 m | 0.20 m | 0.23 m |
 
-The radar ratio at 30 s is **0.17**, against 0.49 without slip detection (`--no-slip-detection`). Over the
-whole run with real GNSS, the maximum error drops from 2.31 m (IMU + wheel) to 0.30 m.
+The radar ratio at 30 s is **0.15** (version 1 of slip detection: 0.17; none: 0.49, `--no-slip-detection`).
+Over the whole run with real GNSS, the maximum error drops from 2.31 m (IMU + wheel) to 0.29 m.
 
 **This shows the pipeline works and that the idea is plausible under the assumed noise levels**
 (`SensorModel` in `sim.py`). The real answer comes from real data.
 
 **Which radar is good enough?** See the sensitivity analysis in
 [docs/navigation/sensitivity.md](../docs/navigation/sensitivity.md) (`python -m landdvl.sweep`). In short:
-- radar velocity noise ≤ 0.01–0.02 m/s per beam,
+- radar velocity noise ≤ 0.01–0.02 m/s per detection,
 - at least 2 beam directions that differ sideways,
 - tilt 30–60° from straight down,
 - at least 10–20 Hz.
@@ -80,13 +82,15 @@ whole run with real GNSS, the maximum error drops from 2.31 m (IMU + wheel) to 0
 - **Simple radar model:** the simulator uses 4 fixed beams. A real TI radar gives a point cloud; write each
   ground detection as a row with its direction (`ux, uy, uz` columns, already supported) and filter out
   non-ground points first.
-- **Time sync:** the simulator has perfect timestamps. The rig must timestamp all sensors on one clock.
+- **Time sync:** the simulator has perfect timestamps. The rig logger puts all sensors on one clock and
+  removes USB jitter, but not each device's constant delay (see the logger docs).
 - **Initial heading** comes from `meta.json` (`start_pose.yaw`). On the rig, start with the trolley aligned
   to a marked line, or estimate heading from the first metres of RTK track.
 
 ## Ideas for the filter work
 
-- Better slip handling for noisy radar: average speeds over ~0.5 s, or estimate slip as a filter state.
+- Slip handling for noisy radar (> 0.02 m/s): estimate wheel slip and scale error as filter states. The
+  averaged, noise-adaptive check with hold-off (version 2) is done.
 - Radar outlier rejection (moving grass, puddles, the trolley's own frame in the beam).
 - Error-state formulation in 3D with a proper IMU mechanisation.
 - Tune `FilterConfig` noise values from static data recorded with the real sensors (Allan variance).

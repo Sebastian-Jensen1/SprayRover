@@ -24,6 +24,10 @@ Alle de forkortelser og fagord, der bruges i SprayRover-dokumenterne, forklaret 
 | **Odometri** | | At måle tilbagelagt vej, fx ved at tælle hjulets omdrejninger. "Hjul-odometri" = position ud fra hjulet |
 | **Encoder** | | Sensor, der tæller hvor meget et hjul eller en motor har drejet |
 | **Slip** | | Når hjulet drejer uden at køretøjet flytter sig tilsvarende, fx på vådt græs. Gør hjul-odometri forkert |
+| **Slip-detektion / hold-off** | | Filteret sammenligner hjulets fart med radarens. Er de for forskellige, regnes hjulet for at glide og ignoreres. **Hold-off:** efter et opdaget slip ignoreres hjulet også de næste 5 sekunder, fordi slip kommer i pletter (vådt græs) |
+| **Kvadratur-encoder** | | Encoder med to signaler (A og B), der er forskudt lidt. Rækkefølgen af skiftene viser, om hjulet drejer frem eller tilbage |
+| **UTC** | Coordinated Universal Time | Verdens fælles standardtid. GNSS-modtageren sender den med hver position |
+| **GGA / GST** | (NMEA-sætninger) | **GGA:** position og fix-type. **GST:** modtagerens eget bud på, hvor præcis positionen er |
 | **DVL** | Doppler Velocity Log | Instrument på undervandsfartøjer, der sender lydstråler mod havbunden og måler farten med Doppler-effekten. Vores navigationsmodul er samme idé på land, med radar i stedet for lyd |
 | **Land-DVL** | (vores arbejdsnavn) | Navigationsmodulet: GNSS + IMU + radar mod jorden + Kalman-filter |
 | **Doppler-effekt** | | En bølges frekvens ændrer sig, når afsenderen bevæger sig (som lyden fra en ambulance, der kører forbi). Radar bruger det til at måle fart |
@@ -42,6 +46,7 @@ Alle de forkortelser og fagord, der bruges i SprayRover-dokumenterne, forklaret 
 | **Kovarians / usikkerhed** | | Filterets eget tal for hvor sikkert det er. Små tal = sikker |
 | **Gate / outlier-afvisning** | | Filteret afviser målinger, der er alt for langt fra det forventede (fx et multipath-spring) |
 | **Allan-varians** | | Metode til at måle en IMU's støj og bias-vandring ud fra en lang optagelse, hvor den står stille |
+| **Seed** | | Startværdien til tilfældige tal i en simulering. Samme seed giver præcis samme "tilfældige" data, så resultater kan gentages. Flere seeds viser, hvor meget resultatet svinger af ren tilfældighed |
 | **Median / p90** | | Median = den midterste værdi. p90 = 90 % af målingerne er bedre end denne |
 
 ## Sensorer og radar
@@ -52,6 +57,9 @@ Alle de forkortelser og fagord, der bruges i SprayRover-dokumenterne, forklaret 
 | **mmWave** | millimeter-wave | Radar ved meget høj frekvens (60–80 GHz). Små, billige chips, der kan måle fart præcist |
 | **TI** | Texas Instruments | Firmaet, der laver de radarchips (fx IWR6843), vi vil bruge |
 | **EVM** | Evaluation Module | Et udviklingskit: chippen på et færdigt print, klar til at afprøve |
+| **Doppler-opløsning** | | Den mindste hastighedsforskel, radaren kan skelne (trinstørrelsen). TI angiver 0,05 m/s for sit IWR6843-referencedesign. Støjen kan være mindre end trinnet, især når man har mange målepunkter |
+| **TLV** | Type-Length-Value | Måde at pakke data på: først hvilken type data, så hvor mange bytes, så selve data. TI-radaren sender sit punktsky-data sådan |
+| **Punktsky** | | Den liste af punkter, radaren ser i hvert billede: position (x, y, z) og hastighed mod/væk fra radaren for hvert punkt |
 | **Lidar** | Light Detection And Ranging | Som radar, men med laserlys. Laver et "billede" af omgivelserne. Sidder på M1-robotten |
 | **ToF** | Time of Flight | Måling af afstand ud fra hvor lang tid lyset er om at komme tilbage |
 | **FOV** | Field Of View | Synsfelt: hvor bredt en sensor kan se |
@@ -75,6 +83,9 @@ Alle de forkortelser og fagord, der bruges i SprayRover-dokumenterne, forklaret 
 | **OWL** | OpenWeedLocator | Open source ukrudtsfinder med Raspberry Pi, kamera og sprøjteventiler |
 | **Mock data / simulering** | | Falske, men realistiske data fra en computer, så man kan udvikle software før hardwaren findes |
 | **Log** | | Optagelse af alle sensordata fra en tur, gemt i filer |
+| **Logger** | | Programmet på laptoppen, der læser alle sensorerne på målevognen og skriver loggen |
+| **Loopback-test** | | Test uden hardware: simulerede data laves om til præcis de bytes, sensorerne ville sende, og sendes gennem loggeren. Bagefter tjekkes det, at resultatet er det samme som den oprindelige simulering |
+| **Jitter** | | Tilfældig variation i, hvornår en besked når frem (fx over USB). Giver unøjagtige tidsstempler, hvis man stempler ved ankomst |
 | **CSV** | Comma-Separated Values | Simpel tabelfil, der kan åbnes i Excel |
 
 ## Elektronik og hardware
@@ -82,6 +93,8 @@ Alle de forkortelser og fagord, der bruges i SprayRover-dokumenterne, forklaret 
 | Ord | Står for | Hvad det betyder |
 |---|---|---|
 | **MCU** | Microcontroller Unit | Lille computer på én chip, der styrer hardware i realtid (fx STM32, Raspberry Pi Pico) |
+| **Firmware** | | Programmet, der kører på en mikrocontroller (fx Pico'en) |
+| **Raspberry Pi Pico 2** | | Lille, billig mikrocontroller-plade (ca. 50 kr.). På målevognen læser den IMU og hjul-encoder med præcise tidsstempler |
 | **STM32** | | En familie af mikrocontrollere fra firmaet ST |
 | **Jetson Orin Nano** | | Kraftig lille computer fra NVIDIA med grafikkort til AI. Sidder i M1 |
 | **GPIO** | General Purpose Input/Output | Ben på en chip, der kan tænde/slukke ting eller læse signaler |
